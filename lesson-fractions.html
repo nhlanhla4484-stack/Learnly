@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractions Fun — Learnly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--purple:#5C4FD4;--purple-light:#EEEDFE;--purple-mid:#AFA9EC;--purple-dark:#3C3489;--teal:#1D9E75;--teal-light:#E1F5EE;--amber:#EF9F27;--amber-light:#FAEEDA;--red:#E24B4A;--red-light:#FCEBEB;--bg:#FAFAF8;--text:#1a1a2e;--text-muted:#6b6b8a;--border:rgba(0,0,0,0.09)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* NAV */
+.lesson-nav{display:flex;align-items:center;background:white;border-bottom:1px solid var(--border);padding:0 24px;height:60px;position:sticky;top:0;z-index:50}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--text-muted);text-decoration:none;margin-right:16px;padding:8px 0;transition:color .2s}
+.back-btn:hover{color:var(--purple)}
+.lesson-title-nav{font-size:15px;font-weight:800;color:var(--text);flex:1}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.tts-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;border:1.5px solid var(--purple-mid);background:var(--purple-light);color:var(--purple-dark);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.tts-btn:hover{background:var(--purple-mid);color:var(--purple-dark)}
+.tts-btn.speaking{background:var(--purple);color:white;border-color:var(--purple)}
+.xp-pill{background:var(--amber-light);color:#633806;font-size:13px;font-weight:800;padding:6px 14px;border-radius:50px;white-space:nowrap}
+.progress-track{position:absolute;bottom:0;left:0;height:3px;background:var(--purple-light);width:100%}
+.progress-fill{height:3px;background:var(--purple);border-radius:0 2px 2px 0;transition:width .5s cubic-bezier(.4,0,.2,1)}
+/* SCREENS */
+.screen{display:none;max-width:680px;margin:0 auto;padding:40px 24px 80px;opacity:0;transform:translateY(16px)}
+.screen.active{display:block;animation:slideIn .35s ease forwards}
+@keyframes slideIn{to{opacity:1;transform:translateY(0)}}
+/* INTRO */
+.lesson-badge{display:inline-flex;align-items:center;gap:6px;background:var(--purple-light);color:var(--purple-dark);font-size:12px;font-weight:800;padding:5px 12px;border-radius:50px;margin-bottom:16px}
+.lesson-h1{font-family:'Baloo 2',cursive;font-size:36px;font-weight:800;color:var(--text);margin-bottom:10px;line-height:1.15}
+.lesson-desc{font-size:16px;color:var(--text-muted);line-height:1.7;margin-bottom:28px}
+.meta-row{display:flex;gap:20px;margin-bottom:32px;flex-wrap:wrap}
+.meta-item{font-size:13px;font-weight:700;color:var(--text-muted)}
+/* CARDS */
+.learn-card{background:white;border:1.5px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px}
+.learn-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);margin-bottom:10px}
+.learn-h2{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2}
+.learn-text{font-size:16px;color:var(--text);line-height:1.75;margin-bottom:14px}
+.learn-text strong{color:var(--purple);font-weight:800}
+.highlight{background:var(--purple-light);border-radius:12px;padding:16px 18px;margin:16px 0;font-size:15px;font-weight:700;color:var(--purple-dark);line-height:1.6}
+.highlight .big{font-family:'Baloo 2',cursive;font-size:22px;display:block;margin-bottom:4px}
+/* PIZZA */
+.pizza-row{display:flex;gap:20px;justify-content:center;align-items:center;flex-wrap:wrap;margin:24px 0}
+.pizza-wrap{text-align:center}
+.pizza-label{font-size:13px;font-weight:800;color:var(--text-muted);margin-top:8px}
+.pizza-frac{font-size:18px;font-weight:800;color:var(--purple);margin-top:4px}
+svg.pizza{width:110px;height:110px;animation:spin-in .5s ease}
+@keyframes spin-in{from{transform:scale(.7) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+/* ACTIVITY */
+.activity-card{background:white;border:1.5px solid var(--border);border-radius:20px;padding:28px;margin-bottom:20px}
+.activity-prompt{font-size:18px;font-weight:800;color:var(--text);margin-bottom:20px;line-height:1.4}
+.fraction-options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.frac-opt{border:2.5px solid var(--border);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:white}
+.frac-opt:hover{border-color:var(--purple-mid);background:var(--purple-light);transform:scale(1.03)}
+.frac-opt.selected{border-color:var(--purple);background:var(--purple-light);transform:scale(1.03)}
+.frac-opt.correct{border-color:var(--teal);background:var(--teal-light);transform:scale(1.05)}
+.frac-opt.wrong{border-color:var(--red);background:var(--red-light);transform:scale(.98)}
+.frac-num{font-family:'Baloo 2',cursive;font-size:28px;font-weight:800;color:var(--text)}
+.frac-word{font-size:13px;color:var(--text-muted);margin-top:4px;font-weight:700}
+.feedback{border-radius:12px;padding:14px 16px;font-size:15px;font-weight:700;line-height:1.5;display:none;animation:fadeUp .3s ease}
+.feedback.show{display:block}
+.feedback.good{background:var(--teal-light);color:#085041}
+.feedback.bad{background:var(--red-light);color:#791F1F}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border:none;transition:all .25s;text-decoration:none;width:100%}
+.btn-primary{background:var(--purple);color:white}
+.btn-primary:hover{background:var(--purple-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(92,79,212,0.3)}
+.btn-primary:active{transform:translateY(0)}
+.check-btn{width:100%;padding:14px;border-radius:50px;background:var(--purple);color:white;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;border:none;cursor:pointer;margin-top:14px;transition:all .25s;display:none}
+.check-btn.show{display:block}
+.check-btn:hover{background:var(--purple-dark);transform:translateY(-2px)}
+.next-btn{width:100%;padding:14px;border-radius:50px;background:var(--teal);color:white;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;border:none;cursor:pointer;margin-top:10px;transition:all .25s;display:none}
+.next-btn.show{display:block;animation:fadeUp .3s ease}
+.next-btn:hover{background:#085041;transform:translateY(-2px)}
+/* QUIZ */
+.quiz-score-track{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+.score-dot{width:12px;height:12px;border-radius:50%;background:#eee;transition:background .4s,transform .2s}
+.score-dot.correct-d{background:var(--teal);transform:scale(1.2)}
+.score-dot.wrong-d{background:var(--red)}
+.q-opt{border:2.5px solid var(--border);border-radius:12px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;background:white;display:flex;align-items:center;gap:12px;text-align:left;margin-bottom:10px}
+.q-opt:hover{border-color:var(--purple-mid);background:var(--purple-light);transform:translateX(4px)}
+.q-opt.selected{border-color:var(--purple);background:var(--purple-light)}
+.q-opt.correct{border-color:var(--teal);background:var(--teal-light);color:#085041}
+.q-opt.wrong{border-color:var(--red);background:var(--red-light);color:#791F1F}
+.q-letter{width:28px;height:28px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+/* REWARD */
+.reward-screen{text-align:center;padding:40px 24px}
+.confetti-row{font-size:40px;margin-bottom:16px;animation:bounce .7s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0) scale(1)}to{transform:translateY(-12px) scale(1.05)}}
+.reward-badge{width:100px;height:100px;border-radius:50%;background:var(--amber-light);border:3px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:52px;margin:0 auto 20px;animation:pop .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.reward-title{font-family:'Baloo 2',cursive;font-size:36px;font-weight:800;color:var(--text);margin-bottom:10px}
+.reward-sub{font-size:16px;color:var(--text-muted);margin-bottom:28px;line-height:1.6}
+.xp-earned{background:var(--amber-light);border:2.5px solid var(--amber);border-radius:14px;padding:16px 24px;display:inline-block;margin:0 auto 28px}
+.xp-num{font-family:'Baloo 2',cursive;font-size:40px;font-weight:800;color:#633806}
+.xp-label{font-size:14px;font-weight:700;color:#854F0B}
+.stars-row{font-size:36px;margin-bottom:28px;letter-spacing:4px}
+.reward-btns{display:flex;flex-direction:column;gap:12px;max-width:360px;margin:0 auto}
+.btn-next-lesson{background:var(--purple);color:white;width:100%;padding:14px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;border:none;cursor:pointer;transition:all .25s}
+.btn-next-lesson:hover{background:var(--purple-dark);transform:translateY(-2px)}
+.btn-home{background:transparent;color:var(--text-muted);border:2px solid var(--border);width:100%;padding:12px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-home:hover{border-color:var(--purple);color:var(--purple)}
+/* FLOATING ICONS */
+.float-icon{position:fixed;font-size:24px;pointer-events:none;animation:floatUp 2s ease forwards;opacity:0;z-index:300}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.4)}}
+/* GUIDE */
+.guide{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.guide-bubble{background:white;border:1.5px solid var(--purple-mid);border-radius:16px 16px 0 16px;padding:10px 16px;font-size:13px;font-weight:700;color:var(--purple-dark);max-width:200px;box-shadow:0 4px 20px rgba(92,79,212,0.15);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;line-height:1.5}
+.guide-bubble.show{opacity:1;transform:translateY(0)}
+.guide-char{width:52px;height:52px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid white;box-shadow:0 4px 16px rgba(92,79,212,0.3);transition:transform .2s;animation:gfloat 3s ease-in-out infinite}
+@keyframes gfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.guide-char:hover{transform:scale(1.12) !important}
+</style>
+</head>
+<body>
+
+<div class="lesson-nav">
+  <a href="app.html" class="back-btn">← Back</a>
+  <div class="lesson-title-nav">Fractions fun 🍕</div>
+  <div class="nav-actions">
+    <button class="tts-btn" id="tts-btn" onclick="toggleTTS()">🔊 Read aloud</button>
+    <div class="xp-pill">+100 XP</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="lesson-badge">🔢 Maths · Grade 3</div>
+  <h1 class="lesson-h1">Fractions fun — pizza &amp; chocolate! 🍕</h1>
+  <p class="lesson-desc">Learn what fractions are by splitting pizzas, chocolate bars, and other yummy things into equal parts. You'll be a fractions expert in no time!</p>
+  <div class="meta-row">
+    <div class="meta-item">⏱ 10–12 min</div>
+    <div class="meta-item">⭐ Ages 6–10</div>
+    <div class="meta-item">⚡ +100 XP</div>
+    <div class="meta-item">📝 5 quiz questions</div>
+  </div>
+  <button class="btn btn-primary" onclick="go('s-learn1')">Let's start! 🚀</button>
+</div>
+
+<!-- LEARN 1 -->
+<div class="screen" id="s-learn1">
+  <div class="learn-card">
+    <div class="learn-label">📖 Part 1 of 3 — What is a fraction?</div>
+    <h2 class="learn-h2">A fraction is a piece of something whole</h2>
+    <p class="learn-text">Imagine you have a pizza. If you cut it into <strong>2 equal pieces</strong> and eat one piece, you ate <strong>½ (one half)</strong> of the pizza.</p>
+    <p class="learn-text">A fraction has two numbers:</p>
+    <div class="highlight">
+      <span class="big">½</span>
+      The <strong>top number</strong> (numerator) = how many pieces you have<br>
+      The <strong>bottom number</strong> (denominator) = total equal pieces
+    </div>
+    <div class="pizza-row">
+      <div class="pizza-wrap">
+        <svg class="pizza" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="50" fill="#FAEEDA" stroke="#EF9F27" stroke-width="2"/>
+          <path d="M55 55 L55 5 A50 50 0 0 1 105 55 Z" fill="#EF9F27" opacity=".7"/>
+          <line x1="55" y1="5" x2="55" y2="105" stroke="#EF9F27" stroke-width="2"/>
+          <line x1="5" y1="55" x2="105" y2="55" stroke="#EF9F27" stroke-width="2"/>
+        </svg>
+        <div class="pizza-label">2 equal pieces</div>
+        <div class="pizza-frac">½ eaten</div>
+      </div>
+      <div class="pizza-wrap">
+        <svg class="pizza" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="50" fill="#FAEEDA" stroke="#EF9F27" stroke-width="2"/>
+          <path d="M55 55 L55 5 A50 50 0 0 1 97.5 30 Z" fill="#EF9F27" opacity=".75"/>
+          <path d="M55 55 L97.5 30 A50 50 0 0 1 97.5 80 Z" fill="#EF9F27" opacity=".45"/>
+          <path d="M55 55 L97.5 80 A50 50 0 0 1 55 105 Z" fill="#EF9F27" opacity=".75"/>
+          <line x1="55" y1="5" x2="55" y2="105" stroke="#EF9F27" stroke-width="1.5"/>
+          <line x1="55" y1="55" x2="97.5" y2="30" stroke="#EF9F27" stroke-width="1.5"/>
+          <line x1="55" y1="55" x2="97.5" y2="80" stroke="#EF9F27" stroke-width="1.5"/>
+        </svg>
+        <div class="pizza-label">4 equal pieces</div>
+        <div class="pizza-frac">¾ eaten</div>
+      </div>
+    </div>
+    <p class="learn-text">The key rule: the pieces must <strong>always be equal</strong>!</p>
+  </div>
+  <button class="btn btn-primary" onclick="go('s-act1')">Got it! Let me try 🍫</button>
+</div>
+
+<!-- ACT 1 -->
+<div class="screen" id="s-act1">
+  <div class="activity-card">
+    <div class="learn-label">🎮 Activity 1</div>
+    <div class="activity-prompt">A chocolate bar is cut into 4 equal pieces. You eat 1 piece. What fraction did you eat?</div>
+    <div style="font-size:64px;text-align:center;margin:16px 0;animation:spin-in .5s ease">🍫</div>
+    <div class="fraction-options" id="a1-opts">
+      <div class="frac-opt" onclick="pick(this,'a1','w')"><div class="frac-num">½</div><div class="frac-word">one half</div></div>
+      <div class="frac-opt" onclick="pick(this,'a1','c')"><div class="frac-num">¼</div><div class="frac-word">one quarter</div></div>
+      <div class="frac-opt" onclick="pick(this,'a1','w')"><div class="frac-num">¾</div><div class="frac-word">three quarters</div></div>
+      <div class="frac-opt" onclick="pick(this,'a1','w')"><div class="frac-num">⅓</div><div class="frac-word">one third</div></div>
+    </div>
+    <div class="feedback" id="a1-fb"></div>
+    <button class="check-btn" id="a1-chk" onclick="chk('a1')">Check my answer ✓</button>
+    <button class="next-btn" id="a1-nxt" onclick="go('s-learn2')">Next part →</button>
+  </div>
+</div>
+
+<!-- LEARN 2 -->
+<div class="screen" id="s-learn2">
+  <div class="learn-card">
+    <div class="learn-label">📖 Part 2 of 3 — Fractions of a group</div>
+    <h2 class="learn-h2">Fractions work with groups too!</h2>
+    <p class="learn-text">Fractions aren't just for food — they work for <strong>groups of things</strong> too.</p>
+    <p class="learn-text">Imagine you have <strong>8 apples</strong>. You give 4 away. You gave away <strong>4/8</strong> — which is the same as <strong>½</strong>!</p>
+    <div class="highlight">
+      <span class="big">🍎🍎🍎🍎 | 🍎🍎🍎🍎</span>
+      4 given away out of 8 total = <strong>4/8 = ½</strong>
+    </div>
+    <p class="learn-text">When we simplify 4/8: 4÷4=1 and 8÷4=2, so 4/8 = ½. This is called <strong>simplifying</strong>.</p>
+  </div>
+  <button class="btn btn-primary" onclick="go('s-act2')">Try the next activity 🍎</button>
+</div>
+
+<!-- ACT 2 -->
+<div class="screen" id="s-act2">
+  <div class="activity-card">
+    <div class="learn-label">🎮 Activity 2</div>
+    <div class="activity-prompt">There are 6 stars. 3 are yellow. What fraction are yellow?</div>
+    <div style="font-size:52px;text-align:center;margin:16px 0;letter-spacing:4px">⭐⭐⭐🌟🌟🌟</div>
+    <div class="fraction-options" id="a2-opts">
+      <div class="frac-opt" onclick="pick(this,'a2','w')"><div class="frac-num">⅓</div><div class="frac-word">one third</div></div>
+      <div class="frac-opt" onclick="pick(this,'a2','c')"><div class="frac-num">½</div><div class="frac-word">one half</div></div>
+      <div class="frac-opt" onclick="pick(this,'a2','w')"><div class="frac-num">⅔</div><div class="frac-word">two thirds</div></div>
+      <div class="frac-opt" onclick="pick(this,'a2','w')"><div class="frac-num">¼</div><div class="frac-word">one quarter</div></div>
+    </div>
+    <div class="feedback" id="a2-fb"></div>
+    <button class="check-btn" id="a2-chk" onclick="chk('a2')">Check my answer ✓</button>
+    <button class="next-btn" id="a2-nxt" onclick="go('s-learn3')">Last part! →</button>
+  </div>
+</div>
+
+<!-- LEARN 3 -->
+<div class="screen" id="s-learn3">
+  <div class="learn-card">
+    <div class="learn-label">📖 Part 3 of 3 — Comparing fractions</div>
+    <h2 class="learn-h2">Which fraction is bigger?</h2>
+    <p class="learn-text"><strong>½ is bigger than ¼</strong> — half of a pizza is always more than a quarter of the same pizza.</p>
+    <div class="pizza-row">
+      <div class="pizza-wrap">
+        <svg class="pizza" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="50" fill="#f9f0ff" stroke="#AFA9EC" stroke-width="2"/>
+          <path d="M55 55 L55 5 A50 50 0 0 1 105 55 Z" fill="#5C4FD4" opacity=".7"/>
+          <line x1="55" y1="5" x2="55" y2="105" stroke="#AFA9EC" stroke-width="2"/>
+          <line x1="5" y1="55" x2="105" y2="55" stroke="#AFA9EC" stroke-width="2"/>
+        </svg>
+        <div class="pizza-label">¼ — smaller</div>
+      </div>
+      <div style="font-family:'Baloo 2',cursive;font-size:32px;font-weight:800;color:var(--text-muted);padding-top:30px">&lt;</div>
+      <div class="pizza-wrap">
+        <svg class="pizza" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="50" fill="#f9f0ff" stroke="#AFA9EC" stroke-width="2"/>
+          <path d="M55 55 L55 5 A50 50 0 0 1 105 55 Z" fill="#5C4FD4" opacity=".7"/>
+          <path d="M55 55 L105 55 A50 50 0 0 1 55 105 Z" fill="#5C4FD4" opacity=".7"/>
+          <line x1="55" y1="5" x2="55" y2="105" stroke="#AFA9EC" stroke-width="2"/>
+          <line x1="5" y1="55" x2="105" y2="55" stroke="#AFA9EC" stroke-width="2"/>
+        </svg>
+        <div class="pizza-label">½ — bigger</div>
+      </div>
+    </div>
+    <div class="highlight">Remember: bigger bottom number = smaller pieces. So ¼ &lt; ½ &lt; ¾</div>
+  </div>
+  <button class="btn btn-primary" onclick="go('s-quiz');startQuiz()">Ready for the quiz! 📝</button>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div class="quiz-score-track" id="dots"></div>
+  <div class="activity-card">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted)" id="q-num">Question 1 of 5</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;color:var(--text);margin-top:8px;line-height:1.3" id="q-text"></div>
+      <div style="font-size:56px;margin:14px 0" id="q-img"></div>
+    </div>
+    <div id="q-opts"></div>
+    <div class="feedback" id="q-fb"></div>
+    <button class="check-btn show" id="q-chk" onclick="checkQ()">Check answer ✓</button>
+    <button class="next-btn" id="q-nxt" onclick="nextQ()">Next question →</button>
+  </div>
+</div>
+
+<!-- REWARD -->
+<div class="screen" id="s-reward">
+  <div class="reward-screen">
+    <div class="confetti-row">🎉🎊🌟🎉🎊</div>
+    <div class="reward-badge">⭐</div>
+    <h2 class="reward-title">Lesson complete!</h2>
+    <p class="reward-sub">Amazing work! You've mastered fractions with pizza and chocolate. You're a fractions superstar! 🍕</p>
+    <div class="xp-earned"><div class="xp-num" id="xp-num">+100 XP</div><div class="xp-label">Experience points earned</div></div>
+    <div class="stars-row" id="stars">⭐⭐⭐</div>
+    <div class="reward-btns">
+      <button class="btn-next-lesson" onclick="window.location='lesson-water-cycle.html'">Next: The water cycle 💧</button>
+      <button class="btn-home" onclick="window.location='app.html'">Back to dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDE -->
+<div class="guide">
+  <div class="guide-bubble" id="g-bubble">Let's learn about fractions! 🍕</div>
+  <div class="guide-char" onclick="toggleGuide()">🦉</div>
+</div>
+
+<script>
+const screens=['s-intro','s-learn1','s-act1','s-learn2','s-act2','s-learn3','s-quiz','s-reward'];
+const progPct={0:0,1:12,2:28,3:44,4:58,5:72,6:82,7:100};
+const guideMessages={
+  's-intro':'Let\'s learn about fractions! 🍕',
+  's-learn1':'Read carefully — fractions are fun! 📖',
+  's-act1':'Pick the right fraction! Think carefully 🤔',
+  's-learn2':'Fractions work for groups too! 🍎',
+  's-act2':'How many stars are yellow? Count them! ⭐',
+  's-learn3':'Which piece is bigger? 🍕',
+  's-quiz':'Quiz time! You\'ve got this! 💪',
+  's-reward':'Amazing work! You\'re a star! 🌟'
+};
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+  const el=document.getElementById(id);
+  el.style.display='block';
+  requestAnimationFrame(()=>el.classList.add('active'));
+  const idx=screens.indexOf(id);
+  document.getElementById('prog').style.width=(progPct[idx]||0)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  showGuide(guideMessages[id]||'');
+  stopTTS();
+}
+
+// ACTIVITY
+let selAct={};
+function pick(el,act,r){
+  document.querySelectorAll('#'+act+'-opts .frac-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selAct[act]=r;
+  document.getElementById(act+'-chk').classList.add('show');
+}
+function chk(act){
+  const r=selAct[act];
+  const fb=document.getElementById(act+'-fb');
+  document.getElementById(act+'-chk').classList.remove('show');
+  document.querySelectorAll('#'+act+'-opts .frac-opt').forEach(o=>o.style.pointerEvents='none');
+  if(r==='c'){
+    document.querySelector('#'+act+'-opts .selected').classList.add('correct');
+    fb.className='feedback show good';fb.textContent='✓ Correct! Fantastic! 🎉';
+    spawnFloats('⭐',3);
+    showGuide('Great job! That\'s exactly right! 🌟');
+    speak('Correct! Great job!');
+  } else {
+    document.querySelector('#'+act+'-opts .selected').classList.add('wrong');
+    document.querySelectorAll('#'+act+'-opts .frac-opt').forEach(o=>{if(o.getAttribute('onclick')&&o.getAttribute('onclick').includes("'c'"))o.classList.add('correct')});
+    fb.className='feedback show bad';fb.textContent='Not quite — check the highlighted answer above!';
+    showGuide('Try again next time! You\'re still learning 💪');
+    speak('Not quite. Look at the correct answer.');
+  }
+  document.getElementById(act+'-nxt').classList.add('show');
+}
+
+// QUIZ
+const questions=[
+  {q:"Which fraction means 'one half'?",img:"🍕",opts:["½","¼","⅓","¾"],c:0},
+  {q:"A watermelon is cut into 8 slices. You eat 2. What fraction?",img:"🍉",opts:["¼","⅛","½","⅔"],c:0},
+  {q:"Which is bigger: ½ or ¼?",img:"🤔",opts:["They are equal","¼ is bigger","½ is bigger","Can't tell"],c:2},
+  {q:"10 sweets, 5 are red. What fraction are red?",img:"🍬",opts:["⅕","¼","½","⅒"],c:2},
+  {q:"A pizza has 4 slices. You eat 3. What fraction is left?",img:"🍕",opts:["¾","¼","½","⅓"],c:1}
+];
+let qi=0,score=0,qSel=null,qDone=false;
+
+function startQuiz(){
+  qi=0;score=0;qSel=null;qDone=false;
+  document.getElementById('dots').innerHTML=questions.map((_,i)=>'<div class="score-dot" id="d'+i+'"></div>').join('');
+  renderQ();
+}
+function renderQ(){
+  const q=questions[qi];
+  document.getElementById('q-num').textContent='Question '+(qi+1)+' of '+questions.length;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-img').textContent=q.img;
+  qSel=null;qDone=false;
+  document.getElementById('q-opts').innerHTML=q.opts.map((o,i)=>`<div class="q-opt" onclick="selQ(this,${i})" id="qo${i}"><div class="q-letter">${'ABCD'[i]}</div>${o}</div>`).join('');
+  document.getElementById('q-fb').className='feedback';
+  document.getElementById('q-chk').style.display='block';
+  document.getElementById('q-nxt').classList.remove('show');
+  document.getElementById('q-nxt').textContent=qi<questions.length-1?'Next question →':'See my results! 🎉';
+  speak(q.q);
+}
+function selQ(el,i){if(qDone)return;document.querySelectorAll('#q-opts .q-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');qSel=i;}
+function checkQ(){
+  if(qSel===null)return;
+  qDone=true;
+  const q=questions[qi];
+  const fb=document.getElementById('q-fb');
+  document.querySelectorAll('#q-opts .q-opt').forEach(o=>o.style.pointerEvents='none');
+  document.getElementById('q-chk').style.display='none';
+  if(qSel===q.c){
+    score++;
+    document.getElementById('qo'+qSel).classList.add('correct');
+    fb.className='feedback show good';fb.textContent='✓ Correct! Well done! 🎉';
+    document.getElementById('d'+qi).classList.add('correct-d');
+    spawnFloats('⭐',2);
+    showGuide('Great job! Keep going! 🌟');
+    speak('Correct! Great job!');
+  } else {
+    document.getElementById('qo'+qSel).classList.add('wrong');
+    document.getElementById('qo'+q.c).classList.add('correct');
+    fb.className='feedback show bad';fb.textContent='Not quite. The correct answer is: '+q.opts[q.c];
+    document.getElementById('d'+qi).classList.add('wrong-d');
+    showGuide('Try again next time! You\'re still learning 💪');
+    speak('Not quite. The correct answer is '+q.opts[q.c]);
+  }
+  document.getElementById('q-nxt').classList.add('show');
+}
+function nextQ(){qi++;if(qi<questions.length)renderQ();else showReward();}
+function showReward(){
+  go('s-reward');
+  const p=score/questions.length;
+  const xp=p>=0.8?100:p>=0.6?80:60;
+  const stars=p>=0.8?'⭐⭐⭐':p>=0.6?'⭐⭐':'⭐';
+  document.getElementById('xp-num').textContent='+'+xp+' XP';
+  document.getElementById('stars').textContent=stars;
+  spawnFloats('🎉',6);
+  speak('Lesson complete! You earned '+xp+' XP. Well done!');
+  showGuide('Amazing work! You\'re a star! 🌟');
+}
+
+// FLOATING ICONS
+function spawnFloats(icon, count){
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='float-icon';
+      el.textContent=icon;
+      el.style.left=Math.random()*80+10+'%';
+      el.style.bottom='100px';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),2000);
+    },i*150);
+  }
+}
+
+// TTS
+let ttsUtterance=null;
+let ttsSpeaking=false;
+function speak(text){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  ttsUtterance=new SpeechSynthesisUtterance(text);
+  ttsUtterance.rate=0.95;
+  ttsUtterance.pitch=1.1;
+  ttsUtterance.onend=()=>{ttsSpeaking=false;updateTTSBtn()};
+  window.speechSynthesis.speak(ttsUtterance);
+  ttsSpeaking=true;
+  updateTTSBtn();
+}
+function stopTTS(){if(window.speechSynthesis)window.speechSynthesis.cancel();ttsSpeaking=false;updateTTSBtn();}
+function toggleTTS(){
+  if(ttsSpeaking){stopTTS();}
+  else{
+    const active=document.querySelector('.screen.active');
+    if(!active)return;
+    const text=active.innerText.replace(/[🔢📖🎮⭐🍕🍫🍎🍬🍉🤔✓✗→←]/g,'').trim();
+    speak(text);
+  }
+}
+function updateTTSBtn(){
+  const btn=document.getElementById('tts-btn');
+  if(ttsSpeaking){btn.textContent='⏹ Stop';btn.classList.add('speaking');}
+  else{btn.textContent='🔊 Read aloud';btn.classList.remove('speaking');}
+}
+
+// GUIDE
+let gTimer;
+function showGuide(msg){
+  const b=document.getElementById('g-bubble');
+  b.textContent=msg;b.classList.add('show');
+  clearTimeout(gTimer);
+  gTimer=setTimeout(()=>b.classList.remove('show'),4500);
+}
+function toggleGuide(){
+  const b=document.getElementById('g-bubble');
+  b.classList.contains('show')?b.classList.remove('show'):showGuide('Click any answer to continue! 🎯');
+}
+
+// Init
+setTimeout(()=>showGuide("Let's learn about fractions! 🍕"),700);
+</script>
+</body>
+</html>

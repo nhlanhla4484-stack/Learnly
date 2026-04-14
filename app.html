@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Learnly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#5C4FD4;--purple-light:#EEEDFE;--purple-mid:#AFA9EC;--purple-dark:#3C3489;
+  --teal:#1D9E75;--teal-light:#E1F5EE;--amber:#EF9F27;--amber-light:#FAEEDA;
+  --coral:#D85A30;--coral-light:#FAECE7;--blue:#185FA5;--blue-light:#E6F1FB;
+  --bg:#FAFAF8;--white:#fff;--text:#1a1a2e;--text-muted:#6b6b8a;
+  --border:rgba(0,0,0,0.08);--radius:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;position:sticky;top:0;height:100vh;flex-shrink:0;overflow-y:auto}
+.sb-logo{font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;color:var(--purple);margin-bottom:32px;padding-left:8px}
+.sb-section{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:0 12px;margin:16px 0 6px}
+.sb-nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:all .2s;text-decoration:none}
+.sb-item:hover{background:var(--bg);color:var(--text)}
+.sb-item.active{background:var(--purple-light);color:var(--purple-dark)}
+.sb-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.sb-bottom{border-top:1px solid var(--border);padding-top:16px;margin-top:16px}
+.profile-row{display:flex;align-items:center;gap:10px;padding:8px}
+.profile-av{width:36px;height:36px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--purple-dark);flex-shrink:0}
+.profile-name{font-size:13px;font-weight:700;color:var(--text)}
+.profile-role{font-size:11px;color:var(--text-muted)}
+.main{flex:1;padding:32px;overflow-y:auto;max-width:960px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.topbar h1{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;color:var(--text)}
+.topbar p{font-size:14px;color:var(--text-muted);margin-top:2px}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--amber-light);color:#633806;font-size:13px;font-weight:800;padding:8px 16px;border-radius:50px;white-space:nowrap}
+.streak-bar{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.streak-fire{font-size:28px}
+.streak-info{flex:1}
+.streak-info strong{font-size:16px;font-weight:800;color:var(--text);display:block}
+.streak-info span{font-size:13px;color:var(--text-muted)}
+.streak-days{display:flex;gap:6px}
+.sd{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted)}
+.sd.on{background:var(--purple);border-color:var(--purple);color:white}
+.section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:12px}
+.grade-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{padding:8px 18px;border-radius:50px;border:1.5px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;background:white;color:var(--text-muted);transition:all .22s}
+.tab.active{background:var(--purple);border-color:var(--purple);color:white}
+.tab:hover:not(.active){border-color:var(--purple-mid);color:var(--purple);transform:translateY(-1px)}
+.subject-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.subj-chip{padding:6px 16px;border-radius:50px;border:1.5px solid var(--border);font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--text-muted);transition:all .2s}
+.subj-chip:hover:not(.active){border-color:#bbb}
+.subj-chip.active{color:white}
+.subj-chip[data-subj="all"].active{background:var(--text);border-color:var(--text)}
+.subj-chip[data-subj="maths"].active{background:var(--purple);border-color:var(--purple)}
+.subj-chip[data-subj="english"].active{background:var(--teal);border-color:var(--teal)}
+.subj-chip[data-subj="science"].active{background:var(--blue);border-color:var(--blue)}
+.subj-chip[data-subj="life"].active{background:var(--amber);border-color:var(--amber)}
+.subjects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px}
+.subject-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .25s}
+.subject-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.08)}
+.sc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sc-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ico-math{background:var(--purple-light)} .ico-read{background:var(--teal-light)} .ico-sci{background:var(--blue-light)} .ico-life{background:var(--amber-light)}
+.sc-name{font-family:'Baloo 2',cursive;font-size:18px;font-weight:700;color:var(--text)}
+.sc-lessons{font-size:12px;color:var(--text-muted)}
+.prog-bg{height:6px;background:var(--bg);border-radius:3px;margin-bottom:6px}
+.prog-fill{height:6px;border-radius:3px;transition:width .6s ease}
+.math-fill{background:var(--purple)} .read-fill{background:var(--teal)} .sci-fill{background:var(--blue)} .life-fill{background:var(--amber)}
+.sc-pct{font-size:12px;font-weight:700;color:var(--text-muted)}
+.lesson-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.lesson-row{background:white;border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .25s;text-decoration:none;color:inherit}
+.lesson-row:hover{border-color:var(--purple-mid);transform:translateX(4px);box-shadow:0 4px 16px rgba(92,79,212,0.08)}
+.lesson-row.hidden{display:none}
+.lr-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.lr-info{flex:1;min-width:0}
+.lr-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px}
+.lr-meta{font-size:12px;color:var(--text-muted)}
+.lr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;flex-shrink:0;white-space:nowrap}
+.b-continue{background:var(--purple-light);color:var(--purple-dark)} .b-new{background:var(--teal-light);color:#085041} .b-challenge{background:var(--amber-light);color:#633806}
+.lr-arrow{color:var(--text-muted);font-size:18px;flex-shrink:0}
+.no-lessons{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:15px;font-weight:600;display:none}
+.no-lessons.show{display:block}
+.guide{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.guide-bubble{background:white;border:1.5px solid var(--purple-mid);border-radius:16px 16px 0 16px;padding:10px 16px;font-size:13px;font-weight:700;color:var(--purple-dark);max-width:220px;box-shadow:0 4px 20px rgba(92,79,212,0.15);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;line-height:1.5}
+.guide-bubble.show{opacity:1;transform:translateY(0)}
+.guide-char{width:52px;height:52px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid white;box-shadow:0 4px 16px rgba(92,79,212,0.3);transition:transform .2s;animation:gfloat 3s ease-in-out infinite}
+.guide-char:hover{transform:scale(1.1) !important}
+@keyframes gfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.anim-in{animation:fadeUp .4s ease both}
+@media(max-width:700px){
+  .sidebar{display:none}
+  .subjects-grid{grid-template-columns:1fr}
+  .main{padding:20px}
+  .streak-days{display:none}
+  .guide{bottom:16px;right:16px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <div class="sidebar">
+    <div class="sb-logo">Learnly ✦</div>
+    <nav class="sb-nav">
+      <div class="sb-section">Menu</div>
+      <a href="app.html" class="sb-item active"><span class="sb-icon">🏠</span> Home</a>
+      <a href="#" class="sb-item" onclick="quickFilter('maths');return false"><span class="sb-icon">🔢</span> Maths</a>
+      <a href="#" class="sb-item" onclick="quickFilter('english');return false"><span class="sb-icon">📖</span> English</a>
+      <a href="#" class="sb-item" onclick="quickFilter('science');return false"><span class="sb-icon">🔬</span> Science</a>
+      <a href="#" class="sb-item" onclick="quickFilter('life');return false"><span class="sb-icon">💬</span> Life Skills</a>
+      <div class="sb-section">Account</div>
+      <a href="#" class="sb-item"><span class="sb-icon">🏆</span> Achievements</a>
+      <a href="#" class="sb-item"><span class="sb-icon">📊</span> Progress</a>
+    </nav>
+    <div class="sb-bottom">
+      <div class="profile-row">
+        <div class="profile-av">SM</div>
+        <div><div class="profile-name">Sarah M.</div><div class="profile-role">Family plan</div></div>
+      </div>
+      <a href="index.html" class="sb-item" style="margin-top:8px"><span class="sb-icon">🚪</span> Log out</a>
+    </div>
+  </div>
+
+  <main class="main">
+
+    <div class="topbar anim-in">
+      <div><h1>Hi, Alex! 👋</h1><p>Ready to learn something today?</p></div>
+      <div class="xp-pill">⚡ 1,240 XP</div>
+    </div>
+
+    <div class="streak-bar anim-in" style="animation-delay:.06s">
+      <span class="streak-fire">🔥</span>
+      <div class="streak-info">
+        <strong>5-day streak — keep it going!</strong>
+        <span>Complete a lesson today to keep your streak alive</span>
+      </div>
+      <div class="streak-days">
+        <div class="sd on">M</div><div class="sd on">T</div><div class="sd on">W</div><div class="sd on">T</div><div class="sd on">F</div><div class="sd">S</div><div class="sd">S</div>
+      </div>
+    </div>
+
+    <div class="anim-in" style="animation-delay:.12s">
+      <div class="section-label">Learning level</div>
+      <div class="grade-tabs" id="grade-tabs">
+        <div class="tab" data-grade="preschool" onclick="setGrade(this)">🌱 Preschool</div>
+        <div class="tab" data-grade="grade1" onclick="setGrade(this)">Grade 1</div>
+        <div class="tab" data-grade="grade2" onclick="setGrade(this)">Grade 2</div>
+        <div class="tab active" data-grade="grade3" onclick="setGrade(this)">Grade 3</div>
+        <div class="tab" data-grade="grade4" onclick="setGrade(this)">Grade 4</div>
+      </div>
+    </div>
+
+    <div class="subject-filter anim-in" id="subj-filter" style="animation-delay:.18s">
+      <div class="subj-chip active" data-subj="all" onclick="setSubj(this)">📚 All</div>
+      <div class="subj-chip" data-subj="maths" onclick="setSubj(this)">🔢 Maths</div>
+      <div class="subj-chip" data-subj="english" onclick="setSubj(this)">📖 English</div>
+      <div class="subj-chip" data-subj="science" id="sci-chip" onclick="setSubj(this)" style="display:none">🔬 Science</div>
+      <div class="subj-chip" data-subj="life" onclick="setSubj(this)">💬 Life Skills</div>
+    </div>
+
+    <div class="anim-in" style="animation-delay:.22s">
+      <div class="section-label">Subject overview</div>
+      <div class="subjects-grid">
+        <div class="subject-card" onclick="setSubj(document.querySelector('[data-subj=maths]'))">
+          <div class="sc-top"><div class="sc-ico ico-math">🔢</div><div><div class="sc-name">Maths</div><div class="sc-lessons" id="cnt-maths">— lessons</div></div></div>
+          <div class="prog-bg"><div class="prog-fill math-fill" style="width:62%"></div></div>
+          <div class="sc-pct">62% complete</div>
+        </div>
+        <div class="subject-card" onclick="setSubj(document.querySelector('[data-subj=english]'))">
+          <div class="sc-top"><div class="sc-ico ico-read">📖</div><div><div class="sc-name">English</div><div class="sc-lessons" id="cnt-english">— lessons</div></div></div>
+          <div class="prog-bg"><div class="prog-fill read-fill" style="width:38%"></div></div>
+          <div class="sc-pct">38% complete</div>
+        </div>
+        <div class="subject-card" id="sci-card" style="display:none" onclick="setSubj(document.querySelector('[data-subj=science]'))">
+          <div class="sc-top"><div class="sc-ico ico-sci">🔬</div><div><div class="sc-name">Science</div><div class="sc-lessons" id="cnt-science">— lessons</div></div></div>
+          <div class="prog-bg"><div class="prog-fill sci-fill" style="width:20%"></div></div>
+          <div class="sc-pct">20% complete</div>
+        </div>
+        <div class="subject-card" onclick="setSubj(document.querySelector('[data-subj=life]'))">
+          <div class="sc-top"><div class="sc-ico ico-life">💬</div><div><div class="sc-name">Life Skills</div><div class="sc-lessons" id="cnt-life">— lessons</div></div></div>
+          <div class="prog-bg"><div class="prog-fill life-fill" style="width:10%"></div></div>
+          <div class="sc-pct">10% complete</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="anim-in" style="animation-delay:.28s">
+      <div class="section-label" id="lesson-label">Grade 3 — All subjects</div>
+      <div class="lesson-list" id="lesson-list">
+
+        <!-- PRESCHOOL -->
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="preschool" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">🔢</div>
+          <div class="lr-info"><div class="lr-title">Counting 1 to 10</div><div class="lr-meta">Maths · Preschool · 8 min · +60 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="preschool" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">🔷</div>
+          <div class="lr-info"><div class="lr-title">Shapes all around us</div><div class="lr-meta">Maths · Preschool · 7 min · +60 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="preschool" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">🔤</div>
+          <div class="lr-info"><div class="lr-title">The ABC song — letters A to M</div><div class="lr-meta">English · Preschool · 6 min · +60 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="preschool" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">🐱</div>
+          <div class="lr-info"><div class="lr-title">Animal sounds — what do they say?</div><div class="lr-meta">English · Preschool · 7 min · +60 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="preschool" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🤝</div>
+          <div class="lr-info"><div class="lr-title">Being kind to friends</div><div class="lr-meta">Life Skills · Preschool · 6 min · +60 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="preschool" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🧼</div>
+          <div class="lr-info"><div class="lr-title">Washing our hands properly</div><div class="lr-meta">Life Skills · Preschool · 5 min · +50 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+
+        <!-- GRADE 1 -->
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade1" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">➕</div>
+          <div class="lr-info"><div class="lr-title">Adding numbers up to 20</div><div class="lr-meta">Maths · Grade 1 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade1" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">🔢</div>
+          <div class="lr-info"><div class="lr-title">Even and odd numbers</div><div class="lr-meta">Maths · Grade 1 · 9 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade1" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">🔊</div>
+          <div class="lr-info"><div class="lr-title">Short vowel sounds (a, e, i, o, u)</div><div class="lr-meta">English · Grade 1 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade1" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">📖</div>
+          <div class="lr-info"><div class="lr-title">Reading simple sentences</div><div class="lr-meta">English · Grade 1 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade1" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🧹</div>
+          <div class="lr-info"><div class="lr-title">Keeping our classroom clean</div><div class="lr-meta">Life Skills · Grade 1 · 8 min · +70 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade1" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🌈</div>
+          <div class="lr-info"><div class="lr-title">Our feelings — happy, sad, angry</div><div class="lr-meta">Life Skills · Grade 1 · 8 min · +70 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+
+        <!-- GRADE 2 -->
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade2" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">➖</div>
+          <div class="lr-info"><div class="lr-title">Subtraction with borrowing</div><div class="lr-meta">Maths · Grade 2 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-continue">Continue</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade2" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">📏</div>
+          <div class="lr-info"><div class="lr-title">Measuring length with a ruler</div><div class="lr-meta">Maths · Grade 2 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade2" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">📝</div>
+          <div class="lr-info"><div class="lr-title">Story building blocks</div><div class="lr-meta">English · Grade 2 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade2" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">🔠</div>
+          <div class="lr-info"><div class="lr-title">Nouns and verbs</div><div class="lr-meta">English · Grade 2 · 9 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade2" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">😤</div>
+          <div class="lr-info"><div class="lr-title">Dealing with big feelings</div><div class="lr-meta">Life Skills · Grade 2 · 8 min · +80 XP</div></div>
+          <span class="lr-badge b-challenge">Challenge</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade2" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">👫</div>
+          <div class="lr-info"><div class="lr-title">Making and keeping friends</div><div class="lr-meta">Life Skills · Grade 2 · 8 min · +70 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+
+        <!-- GRADE 3 -->
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade3" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">🍕</div>
+          <div class="lr-info"><div class="lr-title">Fractions fun — pizza &amp; chocolate</div><div class="lr-meta">Maths · Grade 3 · 10 min · +100 XP</div></div>
+          <span class="lr-badge b-continue">Continue</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-dynamic.html?grade=Grade%203&subject=Maths&topic=Multiplication" class="lesson-row" data-grade="grade3" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">✖️</div>
+          <div class="lr-info"><div class="lr-title">Multiplication tables (×2 to ×5)</div><div class="lr-meta">Maths · Grade 3 · 12 min · +100 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade3" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">📊</div>
+          <div class="lr-info"><div class="lr-title">Reading bar graphs</div><div class="lr-meta">Maths · Grade 3 · 10 min · +90 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade3" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">✍️</div>
+          <div class="lr-info"><div class="lr-title">Writing a paragraph</div><div class="lr-meta">English · Grade 3 · 12 min · +90 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade3" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">🔎</div>
+          <div class="lr-info"><div class="lr-title">Reading comprehension — short stories</div><div class="lr-meta">English · Grade 3 · 12 min · +90 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade3" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🌿</div>
+          <div class="lr-info"><div class="lr-title">Healthy eating habits</div><div class="lr-meta">Life Skills · Grade 3 · 10 min · +80 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade3" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🧘</div>
+          <div class="lr-info"><div class="lr-title">Managing stress at school</div><div class="lr-meta">Life Skills · Grade 3 · 9 min · +80 XP</div></div>
+          <span class="lr-badge b-challenge">Challenge</span><span class="lr-arrow">›</span>
+        </a>
+
+        <!-- GRADE 4 -->
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">➗</div>
+          <div class="lr-info"><div class="lr-title">Long division — step by step</div><div class="lr-meta">Maths · Grade 4 · 14 min · +110 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="maths">
+          <div class="lr-icon" style="background:var(--purple-light)">📐</div>
+          <div class="lr-info"><div class="lr-title">Area and perimeter</div><div class="lr-meta">Maths · Grade 4 · 12 min · +110 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-water-cycle.html" class="lesson-row" data-grade="grade4" data-subj="science">
+          <div class="lr-icon" style="background:var(--blue-light)">💧</div>
+          <div class="lr-info"><div class="lr-title">The water cycle</div><div class="lr-meta">Science · Grade 4 · 12 min · +100 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="science">
+          <div class="lr-icon" style="background:var(--blue-light)">🌱</div>
+          <div class="lr-info"><div class="lr-title">How plants make food (photosynthesis)</div><div class="lr-meta">Science · Grade 4 · 12 min · +100 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="science">
+          <div class="lr-icon" style="background:var(--blue-light)">🦴</div>
+          <div class="lr-info"><div class="lr-title">The human skeleton</div><div class="lr-meta">Science · Grade 4 · 11 min · +100 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">📰</div>
+          <div class="lr-info"><div class="lr-title">Reading comprehension — news articles</div><div class="lr-meta">English · Grade 4 · 14 min · +110 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="english">
+          <div class="lr-icon" style="background:var(--teal-light)">✏️</div>
+          <div class="lr-info"><div class="lr-title">Writing a persuasive argument</div><div class="lr-meta">English · Grade 4 · 14 min · +110 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">💪</div>
+          <div class="lr-info"><div class="lr-title">Building resilience and grit</div><div class="lr-meta">Life Skills · Grade 4 · 10 min · +90 XP</div></div>
+          <span class="lr-badge b-challenge">Challenge</span><span class="lr-arrow">›</span>
+        </a>
+        <a href="lesson-fractions.html" class="lesson-row" data-grade="grade4" data-subj="life">
+          <div class="lr-icon" style="background:var(--amber-light)">🤔</div>
+          <div class="lr-info"><div class="lr-title">Making good decisions</div><div class="lr-meta">Life Skills · Grade 4 · 9 min · +90 XP</div></div>
+          <span class="lr-badge b-new">New</span><span class="lr-arrow">›</span>
+        </a>
+
+      </div>
+      <div class="no-lessons" id="no-lessons">😕 No lessons yet for this selection. Try another grade or subject!</div>
+    </div>
+
+  </main>
+</div>
+
+<!-- GUIDE CHARACTER -->
+<div class="guide">
+  <div class="guide-bubble" id="guide-bubble">Let's learn something fun today! 🚀</div>
+  <div class="guide-char" onclick="toggleGuide()" title="Your buddy">🦉</div>
+</div>
+
+<script>
+const gradeSubjects={preschool:['maths','english','life'],grade1:['maths','english','life'],grade2:['maths','english','life'],grade3:['maths','english','life'],grade4:['maths','english','science','life']};
+let curGrade='grade3',curSubj='all';
+
+function setGrade(el){
+  document.querySelectorAll('#grade-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  curGrade=el.dataset.grade;
+  curSubj='all';
+  document.querySelectorAll('.subj-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('[data-subj="all"]').classList.add('active');
+  const hasSci=gradeSubjects[curGrade].includes('science');
+  document.getElementById('sci-chip').style.display=hasSci?'':'none';
+  document.getElementById('sci-card').style.display=hasSci?'':'none';
+  updateCounts();
+  applyFilter();
+  const label=el.textContent.trim();
+  showGuide('Showing '+label+' lessons! 📚');
+}
+
+function setSubj(el){
+  document.querySelectorAll('.subj-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  curSubj=el.dataset.subj;
+  applyFilter();
+}
+
+function quickFilter(subj){
+  curSubj=subj;
+  document.querySelectorAll('.subj-chip').forEach(c=>c.classList.remove('active'));
+  const chip=document.querySelector('[data-subj="'+subj+'"]');
+  if(chip){chip.classList.add('active');}
+  applyFilter();
+}
+
+function updateCounts(){
+  const rows=document.querySelectorAll('#lesson-list .lesson-row');
+  const c={maths:0,english:0,science:0,life:0};
+  rows.forEach(r=>{if(r.dataset.grade===curGrade)c[r.dataset.subj]=(c[r.dataset.subj]||0)+1;});
+  ['maths','english','science','life'].forEach(s=>{
+    const el=document.getElementById('cnt-'+s);
+    if(el)el.textContent=(c[s]||0)+' lesson'+(c[s]!==1?'s':'')+' available';
+  });
+}
+
+function applyFilter(){
+  const rows=document.querySelectorAll('#lesson-list .lesson-row');
+  let vis=0;
+  rows.forEach(r=>{
+    const show=r.dataset.grade===curGrade&&(curSubj==='all'||r.dataset.subj===curSubj);
+    r.classList.toggle('hidden',!show);
+    if(show)vis++;
+  });
+  document.getElementById('no-lessons').classList.toggle('show',vis===0);
+  const gLabel=document.querySelector('[data-grade="'+curGrade+'"]').textContent.replace('🌱 ','').trim();
+  const sLabel=curSubj==='all'?'All subjects':curSubj.charAt(0).toUpperCase()+curSubj.slice(1);
+  document.getElementById('lesson-label').textContent=gLabel+' — '+sLabel;
+}
+
+let guideTimer;
+function showGuide(msg){
+  const b=document.getElementById('guide-bubble');
+  b.textContent=msg;
+  b.classList.add('show');
+  clearTimeout(guideTimer);
+  guideTimer=setTimeout(()=>b.classList.remove('show'),4500);
+}
+function toggleGuide(){
+  const b=document.getElementById('guide-bubble');
+  b.classList.contains('show')?b.classList.remove('show'):showGuide('Click any lesson to start! 🎉');
+}
+
+updateCounts();
+applyFilter();
+setTimeout(()=>showGuide("Let's learn something fun today! 🚀"),900);
+</script>
+</body>
+</html>

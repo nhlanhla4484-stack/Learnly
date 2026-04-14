@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up — Learnly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--purple:#5C4FD4;--purple-light:#EEEDFE;--purple-mid:#AFA9EC;--purple-dark:#3C3489;--teal:#1D9E75;--teal-light:#E1F5EE;--amber:#EF9F27;--amber-light:#FAEEDA;--bg:#FAFAF8;--white:#ffffff;--text:#1a1a2e;--text-muted:#6b6b8a;--border:rgba(0,0,0,0.10);--radius:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--purple);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:64px;border-bottom:1px solid var(--border);background:white}
+.nav-logo{font-family:'Baloo 2',cursive;font-size:24px;font-weight:800;color:var(--purple);text-decoration:none}
+.nav-login{font-size:14px;font-weight:700;color:var(--text-muted)}
+
+.page{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:48px 20px}
+.card{background:white;border-radius:24px;border:1.5px solid var(--border);padding:40px;width:100%;max-width:500px}
+
+/* Steps */
+.steps{display:flex;justify-content:center;gap:0;margin-bottom:32px}
+.step{display:flex;align-items:center}
+.step-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;transition:all .3s}
+.step-line{width:36px;height:2px;background:#eee}
+.step.active .step-circle{background:var(--purple);color:white}
+.step.done .step-circle{background:var(--teal);color:white}
+.step.idle .step-circle{background:#eee;color:var(--text-muted)}
+
+/* Form */
+.step-panel{display:none}
+.step-panel.active{display:block}
+.panel-title{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px}
+.panel-sub{font-size:14px;color:var(--text-muted);margin-bottom:28px;line-height:1.5}
+.field{margin-bottom:18px}
+label{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+input[type=text],input[type=email],input[type=password],input[type=tel]{width:100%;height:44px;border:1.5px solid var(--border);border-radius:10px;padding:0 14px;font-family:'Nunito',sans-serif;font-size:15px;color:var(--text);background:white;outline:none;transition:border-color .2s}
+input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(92,79,212,0.1)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border:none;transition:all .2s;margin-top:8px}
+.btn-primary{background:var(--purple);color:white}
+.btn-primary:hover{background:var(--purple-dark)}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text);margin-top:10px}
+.btn-outline:hover{border-color:var(--purple);color:var(--purple)}
+.btn-google{background:white;border:1.5px solid var(--border);color:var(--text);margin-top:0}
+.btn-google:hover{border-color:var(--purple-mid)}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:13px;color:var(--text-muted);font-weight:600}
+.divider::before,.divider::after{content:'';flex:1;height:1.5px;background:#eee}
+.terms{font-size:12px;color:var(--text-muted);text-align:center;margin-top:14px;line-height:1.6}
+
+/* Avatar picker */
+.avatar-grid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0 20px}
+.av-opt{width:52px;height:52px;border-radius:50%;border:2.5px solid #eee;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;transition:all .2s;background:var(--bg)}
+.av-opt:hover,.av-opt.sel{border-color:var(--purple);background:var(--purple-light)}
+
+/* Age chips */
+.age-grid{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 20px}
+.age-chip{padding:8px 18px;border-radius:50px;border:2px solid #eee;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text-muted)}
+.age-chip:hover,.age-chip.sel{border-color:var(--purple);background:var(--purple-light);color:var(--purple-dark)}
+
+/* Plan cards */
+.plan-grid{display:flex;flex-direction:column;gap:12px;margin:16px 0 24px}
+.plan-opt{border:2px solid #eee;border-radius:14px;padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px}
+.plan-opt:hover{border-color:var(--purple-mid)}
+.plan-opt.sel{border-color:var(--purple);background:var(--purple-light)}
+.plan-opt.featured{border-color:var(--purple-mid)}
+.radio-circle{width:20px;height:20px;border-radius:50%;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.plan-opt.sel .radio-circle{background:var(--purple);border-color:var(--purple)}
+.radio-inner{width:8px;height:8px;border-radius:50%;background:white}
+.plan-info{flex:1}
+.plan-label{font-size:15px;font-weight:800;color:var(--text)}
+.plan-detail{font-size:12px;color:var(--text-muted);margin-top:2px}
+.plan-price-tag{font-size:16px;font-weight:800;color:var(--purple)}
+.rec-tag{display:inline-block;background:var(--purple);color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:50px;margin-left:6px;vertical-align:middle}
+.success-box{text-align:center;padding:20px 0}
+.success-icon{font-size:64px;display:block;margin-bottom:16px}
+.success-title{font-family:'Baloo 2',cursive;font-size:28px;font-weight:800;color:var(--text);margin-bottom:8px}
+.success-sub{font-size:15px;color:var(--text-muted);line-height:1.6;margin-bottom:28px}
+.go-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--purple);color:white;border:none;border-radius:50px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;transition:all .2s}
+.go-btn:hover{background:var(--purple-dark);text-decoration:none;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Learnly ✦</a>
+  <span class="nav-login">Already have an account? <a href="login.html">Log in</a></span>
+</nav>
+
+<div class="page">
+  <div class="card">
+
+    <!-- Step indicators -->
+    <div class="steps" id="steps">
+      <div class="step active" id="s1"><div class="step-circle">1</div></div>
+      <div class="step-line"></div>
+      <div class="step idle" id="s2"><div class="step-circle">2</div></div>
+      <div class="step-line"></div>
+      <div class="step idle" id="s3"><div class="step-circle">3</div></div>
+      <div class="step-line"></div>
+      <div class="step idle" id="s4"><div class="step-circle">4</div></div>
+    </div>
+
+    <!-- STEP 1: Parent account -->
+    <div class="step-panel active" id="panel-1">
+      <div class="panel-title">Create your account</div>
+      <p class="panel-sub">Parents sign up first — you stay in full control of your child's learning.</p>
+      <button class="btn btn-google" onclick="nextStep()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.8 2.2 30.3 0 24 0 14.7 0 6.7 5.4 2.7 13.3l7.9 6.1C12.4 13.1 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.5c-.5 2.8-2.1 5.1-4.5 6.7l7 5.4c4.1-3.8 6.5-9.4 6.5-16.1z"/><path fill="#FBBC05" d="M10.6 28.6A14.4 14.4 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.5 10.7l8.1-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7-5.4c-2.2 1.5-5 2.3-8.9 2.3-6.2 0-11.5-3.6-13.4-8.9l-8.1 6.1C6.7 42.6 14.7 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or use email</div>
+      <div class="field"><label>Full name</label><input type="text" id="name" placeholder="e.g. Sarah Mokoena"></div>
+      <div class="field"><label>Email address</label><input type="email" id="email" placeholder="sarah@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="pw" placeholder="Minimum 8 characters"></div>
+      <button class="btn btn-primary" onclick="nextStep()">Create account →</button>
+      <p class="terms">By signing up you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. We comply with POPIA.</p>
+    </div>
+
+    <!-- STEP 2: Child profile -->
+    <div class="step-panel" id="panel-2">
+      <div class="panel-title">Add a child profile</div>
+      <p class="panel-sub">You can add up to 4 profiles on the Family plan. Start with one — add more anytime.</p>
+      <div class="field"><label>Child's name</label><input type="text" id="child-name" placeholder="e.g. Alex"></div>
+      <label>Age group</label>
+      <div class="age-grid">
+        <div class="age-chip" onclick="selectChip(this,'age')">Ages 2–5</div>
+        <div class="age-chip sel" onclick="selectChip(this,'age')">Ages 6–10</div>
+        <div class="age-chip" onclick="selectChip(this,'age')">Ages 11–14</div>
+      </div>
+      <label>Pick an avatar</label>
+      <div class="avatar-grid">
+        <div class="av-opt" onclick="selectAv(this)">🦊</div>
+        <div class="av-opt sel" onclick="selectAv(this)">🐧</div>
+        <div class="av-opt" onclick="selectAv(this)">🦁</div>
+        <div class="av-opt" onclick="selectAv(this)">🐸</div>
+        <div class="av-opt" onclick="selectAv(this)">🐻</div>
+        <div class="av-opt" onclick="selectAv(this)">🦋</div>
+      </div>
+      <div class="field"><label>Parent PIN <span style="font-weight:400;color:var(--text-muted)">(4 digits — locks settings from kids)</span></label><input type="tel" id="pin" placeholder="e.g. 1234" maxlength="4"></div>
+      <button class="btn btn-primary" onclick="nextStep()">Save profile →</button>
+      <button class="btn btn-outline" onclick="nextStep()">+ Add another child later</button>
+    </div>
+
+    <!-- STEP 3: Plan -->
+    <div class="step-panel" id="panel-3">
+      <div class="panel-title">Choose your plan</div>
+      <p class="panel-sub">Start free — upgrade or cancel anytime. All prices in Rand (ZAR).</p>
+      <div class="plan-grid">
+        <div class="plan-opt" id="plan-free" onclick="selectPlan('free')">
+          <div class="radio-circle"><div class="radio-inner"></div></div>
+          <div class="plan-info">
+            <div class="plan-label">Free</div>
+            <div class="plan-detail">1 child · 3 subjects · limited lessons</div>
+          </div>
+          <div class="plan-price-tag">R0</div>
+        </div>
+        <div class="plan-opt featured sel" id="plan-family" onclick="selectPlan('family')">
+          <div class="radio-circle"><div class="radio-inner"></div></div>
+          <div class="plan-info">
+            <div class="plan-label">Family <span class="rec-tag">Popular</span></div>
+            <div class="plan-detail">Up to 4 kids · all subjects · parent dashboard</div>
+          </div>
+          <div class="plan-price-tag">R100/mo</div>
+        </div>
+        <div class="plan-opt" id="plan-school" onclick="selectPlan('school')">
+          <div class="radio-circle"><div class="radio-inner"></div></div>
+          <div class="plan-info">
+            <div class="plan-label">School</div>
+            <div class="plan-detail">Unlimited learners · teacher dashboard · CAPS aligned</div>
+          </div>
+          <div class="plan-price-tag">R300/mo</div>
+        </div>
+      </div>
+      <div style="background:var(--teal-light);border-radius:10px;padding:12px 14px;font-size:13px;color:#085041;font-weight:600;margin-bottom:16px">
+        ✓ Family & School plans include a free trial — no card needed to start
+      </div>
+      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
+    </div>
+
+    <!-- STEP 4: Success -->
+    <div class="step-panel" id="panel-4">
+      <div class="success-box">
+        <span class="success-icon">🎉</span>
+        <div class="success-title">You're all set!</div>
+        <p class="success-sub">Welcome to Learnly! Alex's profile is ready. Your 14-day free trial has started — explore everything with no limits.</p>
+        <a href="app.html" class="go-btn">Start learning ✦</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+function nextStep() {
+  if (currentStep < totalSteps) {
+    document.getElementById('panel-' + currentStep).classList.remove('active');
+    const stepEl = document.getElementById('s' + currentStep);
+    stepEl.classList.remove('active');
+    stepEl.classList.add('done');
+    stepEl.querySelector('.step-circle').textContent = '✓';
+    currentStep++;
+    document.getElementById('panel-' + currentStep).classList.add('active');
+    document.getElementById('s' + currentStep).classList.remove('idle');
+    document.getElementById('s' + currentStep).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function selectChip(el, group) {
+  document.querySelectorAll('.age-chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function selectAv(el) {
+  document.querySelectorAll('.av-opt').forEach(a => a.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function selectPlan(plan) {
+  ['free','family','school'].forEach(p => {
+    const el = document.getElementById('plan-' + p);
+    el.classList.remove('sel');
+    el.querySelector('.radio-circle').style.background = '';
+    el.querySelector('.radio-circle').style.borderColor = '#ccc';
+  });
+  const sel = document.getElementById('plan-' + plan);
+  sel.classList.add('sel');
+}
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('plan') === 'school') selectPlan('school');
+</script>
+</body>
+</html>
